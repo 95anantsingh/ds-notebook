@@ -1,0 +1,9 @@
+sphinx
+myst_parser
+sphinx_rtd_theme
+sphinx_copybutton
+sphinxcontrib-mermaid>=2.0.2
+sphinx-togglebutton
+sphinx-design
+sphinx-last-updated-by-git
+sphinx-sitemap

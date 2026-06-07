@@ -1,0 +1,115 @@
+/* Right side Page Content */
+/* @media screen and (min-width: 1270px)  {
+    div.wy-side-scroll li.toctree-l1.current > ul {
+        position: fixed;
+        margin-left: 0px;
+        overflow-y: auto;
+        padding-left: 5px;
+        border-left: 1px solid #767677;
+        height: 95%;
+        top: 70px;
+        left: 1100px;
+    }
+
+    div.wy-side-scroll li.toctree-l1.current a {
+        border-right: none;
+    }
+
+    div.wy-side-scroll li.toctree-l1.current ul {
+        max-width: 400px;
+    }
+
+    div.wy-side-scroll li.toctree-l1.current ul, li.toctree-l1.current li, li.toctree-l1.current a {
+        background-color: transparent !important;
+    }
+
+    div.wy-side-scroll li.toctree-l1.current ul {
+      display: block !important;
+    }
+
+    div.wy-side-scroll li.toctree-l1.current span.toctree-expand {
+        display: none !important;
+    }
+
+    div.wy-side-scroll li.toctree-l2 li.toctree-l3 > a {
+      padding: .4045em 4.045em !important;
+    }
+
+    div.wy-side-scroll li.toctree-l4 > a {
+      padding: .4045em 5.663em !important;
+  }
+} */
+
+/* Default Text Color */
+body {
+    color: #404040;
+}
+
+/* H2 top margin */
+h2 {
+    margin-top: 0px;
+}
+
+/* H4 font size */
+h4 {
+    font-size: 102%
+}
+
+/* Heading bottom margin */
+.rst-content .toctree-wrapper>p.caption,
+.rst-content h1,
+.rst-content h2,
+.rst-content h3,
+.rst-content h4,
+.rst-content h5,
+.rst-content h6 {
+    margin-bottom: 10px
+}
+
+/* Code block font size */
+.rst-content code,
+.rst-content tt,
+code {
+    font-size: 92%;
+}
+
+/* Navigation panel shadow */
+.wy-nav-side {
+    box-shadow: rgba(0, 0, 0, 0.16) 0px 5px 18px 0px, rgba(0, 0, 0, 0.06) 0px 0px 0px 1px;
+}
+
+
+/* Minimum page size */
+
+@media screen and (max-width: 768px) {
+    .wy-nav-content-wrap .wy-nav-content {
+        padding: 0;
+    }
+}
+
+@media screen and (max-width: 768px) {
+    .wy-nav-content-wrap .wy-nav-content .rst-content {
+        padding: 1.618em;
+    }
+}
+
+.wy-nav-content {
+    max-width: 100%;
+    padding: 0px;
+}
+
+.rst-content {
+    padding: 1.618em 3.236em;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+footer {
+    margin-top: auto;
+}
+
+/* sphinx-design: add vertical gap between card rows */
+.sd-row {
+    row-gap: 1.5rem;
+}

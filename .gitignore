@@ -1,0 +1,18 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+__pypackages__/
+
+# Sphinx documentation
+build/
+
+# Mac
+.DS_Store
+
+# Temp
+temp/
+**/plans
+
+# Local-only content
+source/pages/Demo/

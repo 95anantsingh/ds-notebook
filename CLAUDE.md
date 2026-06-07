@@ -1,0 +1,64 @@
+# DS-Notebook
+
+A Sphinx-based data science reference notebook deployed to GitHub Pages at https://95anantsingh.github.io/ds-notebook.
+
+## Stack
+
+- **Sphinx** with MyST Markdown parser and `sphinx_rtd_theme`
+- **Python 3.11**, dependencies in `requirements.txt`
+- **GitHub Actions** builds and deploys on push to `main`
+
+## Project Structure
+
+```
+source/
+  conf.py         # Sphinx config
+  index.md        # Root TOC (auto-updated by indexer)
+  indexer.py      # Auto-renames files and regenerates TOC
+  pages/          # Content organized by topic
+    Machine Learning/
+    Deep Learning/
+    Computer Vision/
+    Natural Language Processing/
+    System_Design/
+    Hardware Architecture/
+    Interview/
+  assets/         # Images, favicon
+  custom/         # Templates and CSS overrides
+```
+
+## Environment
+
+```bash
+conda activate notes   # activate the project Python environment before any commands
+```
+
+## Common Commands
+
+```bash
+make install   # pip install -r requirements.txt
+make html      # Run indexer + build HTML docs
+make check     # Dry-run indexer (used in CI); exits 1 if files need renaming
+make view      # Open built docs in browser
+make clean     # Remove build/
+```
+
+## Indexer Behavior (`source/indexer.py`)
+
+- Recursively renames `.md` files in `source/pages/` with zero-padded numeric prefixes (`01-topic.md`)
+- Converts filenames to kebab-case
+- Auto-generates `index.md` files for subdirectories
+- Updates the `<!-- TOC START -->` / `<!-- TOC END -->` block in `source/index.md`
+- Run `make check` to validate without making changes (CI uses this)
+
+## Adding Content
+
+1. Drop a `.md` file into the relevant `source/pages/<Topic>/` directory
+2. Run `make html` — the indexer renames files and updates the TOC automatically
+3. Never manually edit the TOC block in `source/index.md`
+
+## CI/CD
+
+- Triggered on pushes to `main` that touch `source/**`, `requirements.txt`, `Makefile`, or `.github/workflows/**`
+- Build job runs `make html`; deploy job publishes `build/html` to GitHub Pages
+- PRs only run the build job (no deploy)
