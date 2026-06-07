@@ -48,14 +48,29 @@ make clean     # Remove build/
 - Recursively renames `.md` files in `source/pages/` with zero-padded numeric prefixes (`01-topic.md`)
 - Converts filenames to kebab-case
 - Auto-generates `index.md` files for subdirectories
-- Updates the `<!-- TOC START -->` / `<!-- TOC END -->` block in `source/index.md`
+- Updates the `<!-- TOC START -->` / `<!-- TOC END -->` block in both the root `source/index.md` **and** every subdirectory `index.md`
 - Run `make check` to validate without making changes (CI uses this)
+
+### index.md sentinel pattern (applies everywhere)
+
+Both the root `source/index.md` and all subdirectory `index.md` files use the same sentinel comments:
+
+```
+<!-- TOC START -->
+…toctree managed by indexer…
+<!-- TOC END -->
+```
+
+Only the block between those sentinels is rewritten on each run. Everything outside — the heading, intro prose, custom sections — is preserved. **Never manually edit inside the sentinel block.**
+
+- New subdirectory indexes are created with `# <Section Name>` heading + sentinel block.
+- Existing indexes: only the sentinel block is updated; all other content survives.
 
 ## Adding Content
 
 1. Drop a `.md` file into the relevant `source/pages/<Topic>/` directory
 2. Run `make html` — the indexer renames files and updates the TOC automatically
-3. Never manually edit the TOC block in `source/index.md`
+3. To annotate a subdirectory index, edit anything outside its `<!-- TOC START -->` / `<!-- TOC END -->` block
 
 ## CI/CD
 

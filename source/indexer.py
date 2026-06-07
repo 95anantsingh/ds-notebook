@@ -239,55 +239,56 @@ def generate_section_with_subsections(path: str) -> list:
 
 def create_subsection_index(path: str, section_name: str) -> None:
     """
-    Create an index.md file for subsections if it doesn't exist and has content
+    Create or update an index.md file for a subsection.
+
+    Only the block between TOC_START / TOC_END is rewritten on each run.
+    Content outside those sentinels (heading, prose, custom sections) is
+    preserved across runs, so authors can freely annotate subdir indexes.
     """
     index_path = os.path.join(path, "index.md")
 
-    # Only create index if there are .md files in this directory tree
     if not has_md_files_recursive(path):
         return
 
-    # Always regenerate index.md to ensure proper sorting
-    heading = section_name.replace("-", " ").replace("_", " ").title()
-
-    # Get all md files in this directory (should now be numbered)
+    # Build the toctree entries
     entries = sorted(os.listdir(path), key=alphanumeric_sort_key)
     md_files = [f for f in entries if is_md_file(f)]
     subdirs = [d for d in entries if os.path.isdir(os.path.join(path, d))]
 
-    content = [f"# {heading}", ""]
-
-    # Only add toctree if there's actual content
-    has_content = False
     toctree_content = []
-
-    # Add markdown files (now numbered and sorted)
     for f in md_files:
         toctree_content.append(f.replace(".md", ""))
-        has_content = True
-
-    # Add subdirectories recursively - only if they have .md files
     for d in subdirs:
         sub_path = os.path.join(path, d)
         if has_md_files_recursive(sub_path):
             create_subsection_index(sub_path, d)
             toctree_content.append(f"{d}/index")
-            has_content = True
 
-    # Only add toctree if there's content to show
-    if has_content:
-        content.extend(["```{toctree}", ":maxdepth: 2", ":glob:", ""])
-        content.extend(toctree_content)
-        content.extend(["```", ""])
+    if toctree_content:
+        toc_lines = ["```{toctree}", ":maxdepth: 2", ":glob:", ""] + toctree_content + ["```"]
+    else:
+        toc_lines = []
 
-    new_content = "\n".join(content)
+    toc_block = "\n".join([TOC_START, ""] + toc_lines + ["", TOC_END])
+
+    if not os.path.exists(index_path):
+        heading = section_name.replace("-", " ").replace("_", " ").title()
+        new_content = f"# {heading}\n\n{toc_block}\n"
+    else:
+        with open(index_path, "r", encoding="utf-8") as f:
+            existing = f.read()
+        pattern = re.compile(f"{TOC_START}.*?{TOC_END}", re.DOTALL)
+        if TOC_START in existing and TOC_END in existing:
+            new_content = pattern.sub(toc_block, existing)
+        else:
+            new_content = existing.rstrip() + "\n\n" + toc_block + "\n"
 
     if DRY_RUN:
-        existing = ""
+        existing_check = ""
         if os.path.exists(index_path):
             with open(index_path, "r", encoding="utf-8") as f:
-                existing = f.read()
-        if existing != new_content:
+                existing_check = f.read()
+        if existing_check != new_content:
             _mark_change(f"Would update: {index_path}")
     else:
         with open(index_path, "w", encoding="utf-8") as f:

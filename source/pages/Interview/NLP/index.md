@@ -1,4 +1,6 @@
-# Nlp
+# NLP
+
+<!-- TOC START -->
 
 ```{toctree}
 :maxdepth: 2
@@ -6,3 +8,5 @@
 
 1-traditional
 ```
+
+<!-- TOC END -->

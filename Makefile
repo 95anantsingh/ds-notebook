@@ -15,6 +15,9 @@ help: ## Show this help message
 
 install: ## Install all dependencies
 	pip install -r requirements.txt
+	rm -rf "$(SOURCEDIR)/pages/Demo"
+	ln -s "../../docs/Demo" "$(SOURCEDIR)/pages/Demo"
+	@echo "Linked source/pages/Demo -> docs/Demo"
 
 update: ## Upgrade all dependencies to latest versions
 	pip install --upgrade -r requirements.txt

@@ -32,9 +32,9 @@ pages/Interview/NLP/index.md
 :caption: Natural Language Processing
 :glob:
 
-pages/Natural Language Processing/Attentions/index.md
-pages/Natural Language Processing/Embeddings/index.md
-pages/Natural Language Processing/Prompt Engineering/index.md
+pages/Natural_Language_Processing/Attentions/index.md
+pages/Natural_Language_Processing/Embeddings/index.md
+pages/Natural_Language_Processing/Prompt_Engineering/index.md
 ```
 
 

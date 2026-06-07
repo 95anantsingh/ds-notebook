@@ -1,5 +1,7 @@
 # Attentions
 
+<!-- TOC START -->
+
 ```{toctree}
 :maxdepth: 2
 :glob:
@@ -8,3 +10,5 @@
 2-flash-attention-3
 3-flash-attention
 ```
+
+<!-- TOC END -->
