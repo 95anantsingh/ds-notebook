@@ -496,7 +496,7 @@ Because `autosectionlabel` is enabled with `autosectionlabel_prefix_document = T
 - Link to a heading on this page: {ref}`pages/Demo/1-demo:Mermaid Diagrams`
 - Link to a heading on this page with custom text: {ref}`jump to diagrams <pages/Demo/1-demo:Mermaid Diagrams>`
 - Link to a heading in another file: `` {ref}`pages/Natural Language Processing/Attentions/index:Attentions` ``
-- Link to another page by path: {doc}`../Natural Language Processing/Attentions/index`
+- Link to another page by path: {doc}`../Natural_Language_Processing/Attentions/index`
 
 ---
 

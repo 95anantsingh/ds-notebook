@@ -3,6 +3,7 @@ SPHINXOPTS    ?=
 SPHINXBUILD   ?= sphinx-build
 SOURCEDIR      = source
 BUILDDIR       = build
+ENV_NAME      := $(shell grep '^name:' env.yaml | cut -d' ' -f2)
 
 .SILENT:
 .DEFAULT_GOAL := help
@@ -14,7 +15,7 @@ help: ## Show this help message
 	@awk 'BEGIN {FS = ":.*?## "; cat = ""; first = 1} /^#\* .* \*$$/ {cat = substr($$0, 4, length($$0) - 5); next} /^[a-zA-Z_-]+:.*?## / {if (cat) {printf "%s \033[3;35m%s\033[0m\n", (first ? "" : "\n"), cat; cat = ""; first = 0} printf "  \033[36m%-20s\033[0m %s\n", $$1, $$2}' $(MAKEFILE_LIST)
 
 install: ## Install all dependencies
-	pip install -r requirements.txt
+	conda env update -n $(ENV_NAME) -f env.yaml
 	rm -rf "$(SOURCEDIR)/pages/Demo"
 	ln -s "../../docs/Demo" "$(SOURCEDIR)/pages/Demo"
 	@echo "Linked source/pages/Demo -> docs/Demo"

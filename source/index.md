@@ -12,6 +12,15 @@ self
 
 ```{toctree}
 :maxdepth: 4
+:caption: Deep Learning
+:glob:
+
+pages/Deep_Learning/Finetuning/index.md
+pages/Deep_Learning/Training/index.md
+```
+
+```{toctree}
+:maxdepth: 4
 :caption: Demo
 :glob:
 
@@ -25,6 +34,7 @@ pages/Demo/1-demo.md
 
 pages/Interview/Inference/index.md
 pages/Interview/NLP/index.md
+pages/Interview/PyTorch/index.md
 ```
 
 ```{toctree}
@@ -35,6 +45,7 @@ pages/Interview/NLP/index.md
 pages/Natural_Language_Processing/Attentions/index.md
 pages/Natural_Language_Processing/Embeddings/index.md
 pages/Natural_Language_Processing/Prompt_Engineering/index.md
+pages/Natural_Language_Processing/Transformer/index.md
 ```
 
 

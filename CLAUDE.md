@@ -72,6 +72,12 @@ Only the block between those sentinels is rewritten on each run. Everything outs
 2. Run `make html` — the indexer renames files and updates the TOC automatically
 3. To annotate a subdirectory index, edit anything outside its `<!-- TOC START -->` / `<!-- TOC END -->` block
 
+### Available Components
+
+See [docs/Demo/1-demo.md](docs/Demo/1-demo.md) for a living reference of every component available in this Sphinx setup: admonitions, math (inline and block), code blocks with line numbers/highlights, Mermaid diagrams, toggle buttons, dropdowns, tabs, cards (with and without links), badges, tables (pipe, list-table, HTML spanning), cross-references, figures, block quotes, and definition lists.
+
+For Mermaid diagrams, use the `mermaid` skill — it generates well-structured diagrams with vertical top-to-bottom layouts.
+
 ## CI/CD
 
 - Triggered on pushes to `main` that touch `source/**`, `requirements.txt`, `Makefile`, or `.github/workflows/**`

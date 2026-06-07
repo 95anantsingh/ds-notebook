@@ -30,7 +30,7 @@ exclude_patterns = ["_build", "Thumbs.db", ".DS_Store"]
 
 mermaid_light_theme = "default"
 mermaid_dark_theme = "default"
-# mermaid_init_config = {"themeVariables": {"primaryColor": "#ff0000"}}
+mermaid_d3_zoom = True
 
 myst_enable_extensions = [
     "dollarmath",
