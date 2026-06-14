@@ -1,16 +1,15 @@
 ---
-name: Bug report
-about: Something isn't working as expected
+name: Site bug
+about: Broken build, rendering issue, broken link, or indexer problem
 labels: bug
 ---
 
 ## Description
-<!-- A clear description of the bug -->
+<!-- What's broken? -->
 
 ## Steps to reproduce
 1. 
 2. 
-3. 
 
 ## Expected behavior
 
@@ -21,7 +20,7 @@ labels: bug
 ## Environment
 - OS:
 - Python version:
-- Relevant package versions:
+- Browser (if rendering issue):
 
 ## Additional context
-<!-- Logs, screenshots, etc. -->
+<!-- Logs, screenshots, error output -->

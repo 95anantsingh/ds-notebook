@@ -3,10 +3,10 @@ name: Sphinx Build and Deploy
 on:
   push:
     branches: [main]
-    paths: ['source/**', 'requirements.txt', 'Makefile', '.github/workflows/**']
+    paths: ["source/**", "requirements.txt", "Makefile", ".github/workflows/**"]
   pull_request:
     branches: [main]
-    paths: ['source/**', 'requirements.txt', 'Makefile', '.github/workflows/**']
+    paths: ["source/**", "requirements.txt", "Makefile", ".github/workflows/**"]
   workflow_dispatch:
 
 concurrency:
@@ -31,9 +31,9 @@ jobs:
       - name: Setup Python
         uses: actions/setup-python@v6
         with:
-          python-version: '3.11'
-          cache: 'pip'
-          cache-dependency-path: 'requirements.txt'
+          python-version: "3.11"
+          cache: "pip"
+          cache-dependency-path: "requirements.txt"
 
       - name: Install dependencies
         run: |
@@ -52,7 +52,6 @@ jobs:
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
 
     needs: build
-
 
     runs-on: ubuntu-latest
     timeout-minutes: 5

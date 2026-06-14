@@ -20,10 +20,10 @@
         {%- if hasdoc('copyright') %}
           {%- trans path=pathto('copyright'), copyright=copyright|e %}&#169; <a href="{{ path }}">Copyright</a> {{ copyright }}{% endtrans %}
         {%- else %}
-          {%- trans copyright=copyright|e %}<b>Anant Singh</b> (<a href="https://bit.ly/3vbNbbg">GitHub</a>, <a href="https://bit.ly/3cGo2iI">LinkedIn</a>){% endtrans %}
+          {%- trans copyright=copyright|e %}<b>Anant Singh</b> (<a href="https://bit.ly/3vbNbbg">GitHub</a>, <a href="https://bit.ly/3cGo2iI">LinkedIn</a>) | {% endtrans %}
         {%- endif %}
       {%- endif %}
-  
+
       {%- if build_id and build_url %}
         <span class="build">
           {#- Translators: Build is a noun, not a verb -#}

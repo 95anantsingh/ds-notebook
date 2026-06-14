@@ -5,52 +5,72 @@ Each block below shows the rendered output followed by the source that produced 
 
 ---
 
-## Admonitions
+## Typography
 
-Use admonitions to call attention to important content.
+### Inline Formatting
 
-```{note}
-Use `{note}` for supplementary information that is helpful but not critical.
-```
+**bold**, _italic_, `inline code`, \*escaped symbols\*
 
-```{tip}
-Use `{tip}` for shortcuts, best practices, or suggestions that improve understanding.
-```
+Strikethrough: ~~deprecated method~~ — enabled by the `strikethrough` extension.
 
-```{important}
-Use `{important}` for information that must not be overlooked.
-```
+Subscript and superscript: H{sub}`2`O and the 4{sup}`th` of July.
 
-```{warning}
-Use `{warning}` when a reader could make a costly mistake if they skip this.
-```
+Inline attributes (`attrs_inline` extension) attach classes/attributes to inline elements — e.g. open a link in a new tab: [docs](https://example.com){target="_blank"}, or tag a span {.bg-warning}`flagged text`.
 
-```{caution}
-Use `{caution}` for potential issues that are less severe than a warning.
-```
+### Smartquotes and Replacements
 
-```{danger}
-Use `{danger}` for actions that can cause data loss, crashes, or irreversible damage.
-```
+The `smartquotes` and `replacements` extensions auto-convert common text:
 
-```{attention}
-Use `{attention}` as a general eye-catcher with no specific severity implied.
-```
+| Source | Rendered |
+|--------|----------|
+| `'single'` and `"double"` | 'single' and "double" |
+| `--` | -- |
+| `---` | --- |
+| `...` | ... |
+| `+-` | +- |
 
-```{hint}
-Use `{hint}` for small clues that help without giving away the full answer.
-```
+### Line Breaks
 
-```{error}
-Use `{error}` to document a known error condition or a common mistake.
-```
+Use `\` at end of a line to insert a `<br>` without starting a new paragraph:
 
-Custom title and body:
+**Fleas** \
+Adam \
+Had 'em.
 
-```{warning} Mixed Precision Gotcha
-When using `torch.autocast`, gradients for `float16` operations can underflow to zero.
-Wrap the loss scaling step inside `torch.cuda.amp.GradScaler`.
-```
+### Lists
+
+Unordered (use `-` or `*`):
+
+- First item
+  - Nested item (2-space indent)
+  - Another nested item
+- Second item
+
+Ordered:
+
+1. First step
+2. Second step
+   1. Sub-step
+   2. Sub-step
+
+Task list (`tasklist` extension). With `myst_enable_checkboxes = True` the boxes are interactive rather than read-only:
+
+- [ ] Implement attention mechanism
+- [x] Add positional encoding
+- [ ] Train on GPU
+
+### Comments
+
+Lines starting with `%` are stripped from the rendered output:
+
+% This comment will not appear in the HTML.
+
+### Footnotes
+
+Auto-numbered[^autoref] and manually-numbered[^3] footnotes are collected at the bottom of the page.
+
+[^autoref]: This is the auto-numbered footnote definition.
+[^3]: This footnote always renders with the number 3.
 
 ---
 
@@ -69,11 +89,11 @@ $$
 ### Multi-line with Alignment
 
 $$
-\begin{align}
+\begin{aligned}
 \mu &= \frac{1}{n} \sum_{i=1}^{n} x_i \\
 \sigma^2 &= \frac{1}{n} \sum_{i=1}^{n} (x_i - \mu)^2 \\
 \hat{x}_i &= \frac{x_i - \mu}{\sqrt{\sigma^2 + \epsilon}}
-\end{align}
+\end{aligned}
 $$
 
 ### Transformer Attention
@@ -87,6 +107,17 @@ $$
 $$
 W = \begin{pmatrix} w_{11} & w_{12} & \cdots & w_{1n} \\ w_{21} & w_{22} & \cdots & w_{2n} \\ \vdots & \vdots & \ddots & \vdots \\ w_{m1} & w_{m2} & \cdots & w_{mn} \end{pmatrix}
 $$
+
+### Using math block
+
+This is much more user readable than other options, but might not be sufficient for complex equations.
+
+```{math}
+(a + b)^2 = a^2 + 2ab + b^2
+
+(a + b)^2  &=  (a + b)(a + b) \\
+           &=  a^2 + 2ab + b^2
+```
 
 ---
 
@@ -136,6 +167,48 @@ def scaled_dot_product_attention(q, k, v, mask=None):
     return torch.matmul(weights, v)      # weighted sum
 ```
 
+### With Caption
+
+Use `:caption:` on `{code-block}` to add a label above the block:
+
+```{code-block} python
+:caption: training_loop.py
+:linenos:
+:emphasize-lines: 4,5
+
+for epoch in range(num_epochs):
+    for batch in dataloader:
+        optimizer.zero_grad()
+        loss = criterion(model(batch.x), batch.y)
+        loss.backward()
+        optimizer.step()
+```
+
+### Including Code from Files
+
+`{literalinclude}` embeds source from a file. Use `:start-after:` / `:end-before:` to extract a slice:
+
+```{literalinclude} examples/example.py
+:language: python
+:start-after: start example
+:end-before: end example
+```
+
+**All options:**
+
+| Option | Description |
+|--------|-------------|
+| `language` | Syntax lexer |
+| `linenos` | Show line numbers |
+| `lineno-start` | Starting line number |
+| `emphasize-lines` | Comma-separated lines to highlight |
+| `caption` | Label above the block |
+| `dedent` | Strip N leading spaces |
+| `start-after` | Begin after line containing this string |
+| `end-before` | End before line containing this string |
+| `lines` | Explicit range, e.g. `5-10` |
+| `pyobject` | Include a named Python class or function |
+
 ---
 
 ## Mermaid Diagrams
@@ -144,6 +217,7 @@ All diagrams are written in Markdown and rendered in the browser — no image fi
 
 ### Flowchart — Training Loop
 
+:::{container} mermaid-w-md
 ```{mermaid}
 flowchart TD
     A([Start Training]) --> B[Load Batch]
@@ -157,6 +231,171 @@ flowchart TD
     I --> B
     E -->|Yes| J([Save Checkpoint])
 ```
+:::
+
+### Line Breaks in Node Labels
+
+`\n` is **not** supported inside Mermaid node text. Use `<br>` instead:
+
+:::{container} mermaid-w-sm
+```{mermaid}
+flowchart LR
+    A["Input<br>Embedding"] --> B["Multi-Head<br>Attention"] --> C["Feed<br>Forward"]
+```
+:::
+
+### Math in Diagrams
+
+`$$...$$` (MathJax) is supported inside node labels:
+
+:::{container} mermaid-w-sm
+```{mermaid}
+flowchart LR
+    A["$$Q, K, V$$"] --> B["$$\text{softmax}\!\left(\frac{QK^T}{\sqrt{d_k}}\right)V$$"]
+```
+:::
+
+### Edge Animations
+
+Edges can be animated using the `e1@-->` syntax to assign an edge ID, then setting animation properties inline or via `classDef`.
+
+**Shorthand — inline speed:**
+
+:::{container} mermaid-w-xs
+```{mermaid}
+flowchart LR
+    A e1@--> B
+    e1@{ animation: fast }
+```
+:::
+
+Two speeds are supported: `fast` and `slow`. This is shorthand for `{ animate: true, animation: fast }`.
+
+**Via classDef — full control:**
+
+:::{container} mermaid-w-xs
+```{mermaid}
+flowchart LR
+    A e1@--> B
+    classDef animate stroke-dasharray: 9\,5,stroke-dashoffset: 900,animation: dash 25s linear infinite;
+    class e1 animate
+```
+:::
+
+- `e1@-->` creates an edge with the ID `e1`
+- `classDef` sets stroke dash pattern, offset, and CSS animation
+- `class e1 animate` applies the class to that edge
+- Commas inside `stroke-dasharray` must be escaped as `\,` since commas are Mermaid's delimiter
+
+### Size Control
+
+Diagrams render at their natural size by default. Use a `{container}` with a width class to cap the width. For tall diagrams, fullscreen control is already enabled site-wide.
+
+**Width classes**
+
+| Class | Max width |
+|---|---|
+| `mermaid-w-xs` | 250px |
+| `mermaid-w-sm` | 400px |
+| `mermaid-w-md` | 600px |
+| `mermaid-w-lg` | 850px |
+| `mermaid-w-full` | 100% |
+
+````markdown
+:::{container} mermaid-w-sm
+```{mermaid}
+flowchart LR
+    A --> B --> C
+```
+:::
+````
+
+Use `{container}` instead of raw `<div>` — it renders as `<div class="...">` without raw HTML parsing issues.
+
+Height is auto managed as per the rendering.
+
+---
+
+## Figures
+
+```{figure} assets/owl.jpg
+:width: 50%
+:align: center
+:alt: Owl artwork
+:name: fig-owl
+
+*Figure 1.* Use `{figure}` to add a caption and alt text to any image.
+```
+
+Cross-reference with `` {ref}`fig-logo` `` or `` {numref}`fig-logo` ``.
+
+**All options:** `:alt:`, `:height:`, `:width:`, `:scale:`, `:align:` (`left`/`center`/`right`), `:target:`, `:name:`, `:class:`, `:figwidth:`, `:figclass:`.
+
+---
+
+## Images
+
+Use `{image}` for a standalone image without a caption. Unlike `{figure}`, it does not produce a numbered label.
+
+```{image} assets/owl.jpg
+:width: 200px
+:align: center
+:alt: Owl artwork
+```
+
+Key options: `:width:` (px or %), `:height:`, `:align:` (`left` / `center` / `right`), `:alt:`, `:target:`, `:class:`.
+
+---
+
+## Admonitions
+
+Use admonitions to call attention to important content.
+
+```{note}
+Use `{note}` for supplementary information that is helpful but not critical.
+```
+
+```{tip}
+Use `{tip}` for shortcuts, best practices, or suggestions that improve understanding.
+```
+
+```{important}
+Use `{important}` for information that must not be overlooked.
+```
+
+```{warning}
+Use `{warning}` when a reader could make a costly mistake if they skip this.
+```
+
+```{caution}
+Use `{caution}` for potential issues that are less severe than a warning.
+```
+
+```{danger}
+Use `{danger}` for actions that can cause data loss, crashes, or irreversible damage.
+```
+
+```{attention}
+Use `{attention}` as a general eye-catcher with no specific severity implied.
+```
+
+```{hint}
+Use `{hint}` for small clues that help without giving away the full answer.
+```
+
+```{error}
+Use `{error}` to document a known error condition or a common mistake.
+```
+
+Custom title and body:
+
+:::{admonition} Mixed Precision Gotcha
+:class: warning
+
+When using `torch.autocast`, gradients for `float16` operations can underflow to zero.
+Wrap the loss scaling step inside `torch.cuda.amp.GradScaler`.
+:::
+
 ---
 
 ## Toggle Buttons
@@ -164,18 +403,6 @@ flowchart TD
 Use toggles to hide worked examples, derivations, or answers so the page stays scannable.
 
 ### Basic Toggle — Hidden by Default
-
-```{toggle}
-**Answer:** The gradient of the cross-entropy loss with respect to the softmax input $z_i$ is:
-
-$$\frac{\partial \mathcal{L}}{\partial z_i} = \hat{y}_i - y_i$$
-
-This is why softmax + cross-entropy is so convenient — the gradient is just the prediction error.
-```
-
-### Toggle — Always Starts Collapsed
-
-`{toggle}` always starts collapsed — `:show:` is unreliable because the content is hidden by CSS before JavaScript runs. Use it only when you want content hidden by default.
 
 ```{toggle}
 **Answer:** The gradient of the cross-entropy loss with respect to the softmax input $z_i$ is:
@@ -215,160 +442,13 @@ Where $N$ = sequence length, $M$ = SRAM size.
 ```
 :::
 
----
+### Collapsible Elements
 
-## Design Components
+Any element with class `toggle` becomes collapsible — not just text blocks:
 
-### Tabs
-
-Use tabs to show the same concept across frameworks or to separate long alternatives.
-
-::::{tab-set}
-
-:::{tab-item} PyTorch
-```python
-import torch.nn.functional as F
-
-output = F.scaled_dot_product_attention(
-    query, key, value,
-    attn_mask=None,
-    dropout_p=0.0,
-    is_causal=True,
-)
+```{image} assets/owl.jpg
+:class: toggle
 ```
-:::
-
-:::{tab-item} JAX
-```python
-import jax.numpy as jnp
-
-def dot_product_attention(q, k, v, mask=None):
-    d_k = q.shape[-1]
-    scores = jnp.matmul(q, k.swapaxes(-2, -1)) / jnp.sqrt(d_k)
-    if mask is not None:
-        scores = jnp.where(mask, scores, -1e9)
-    weights = jax.nn.softmax(scores, axis=-1)
-    return jnp.matmul(weights, v)
-```
-:::
-
-:::{tab-item} NumPy
-```python
-import numpy as np
-
-def attention(Q, K, V):
-    d_k = Q.shape[-1]
-    scores = Q @ K.T / np.sqrt(d_k)
-    weights = np.exp(scores - scores.max(-1, keepdims=True))
-    weights /= weights.sum(-1, keepdims=True)
-    return weights @ V
-```
-:::
-
-::::
-
-### Cards
-
-Use cards to organize related concepts side-by-side.
-
-::::{grid} 2
-
-:::{grid-item-card} Encoder-only Models
-**Examples:** BERT, RoBERTa, DeBERTa
-
-Best for tasks that require understanding the full context simultaneously — classification, NER, extractive QA.
-
-Trained with Masked Language Modelling (MLM).
-:::
-
-:::{grid-item-card} Decoder-only Models
-**Examples:** GPT-4, LLaMA, Mistral
-
-Best for generation tasks. Process tokens left-to-right with causal masking.
-
-Trained with next-token prediction (CLM).
-:::
-
-:::{grid-item-card} Encoder-Decoder Models
-**Examples:** T5, BART, mT5
-
-Best for seq2seq tasks — translation, summarisation, generative QA.
-
-Encoder builds full context; decoder attends to it via cross-attention.
-:::
-
-:::{grid-item-card} Mixture of Experts
-**Examples:** Mixtral, Switch Transformer
-
-Scales parameter count without scaling compute. A router sends each token to $k$ of $N$ expert FFN layers.
-
-Active params ≪ total params.
-:::
-
-::::
-
-### Cards with Links
-
-```{note}
-For `:link-type: doc`, paths with spaces in directory names are not supported by sphinx-design.
-Use `:link-type: url` with a relative `.html` path, or only link to docs whose full path has no spaces.
-```
-
-::::{grid} 2
-
-:::{grid-item-card} Inference Notes
-:link: ../Interview/Inference/1-inference
-:link-type: doc
-
-Click this card to navigate to a page. Add `:link:` (doc path) and `:link-type: doc` to any card to make the whole card clickable.
-:::
-
-:::{grid-item-card} NLP Index
-:link: ../Interview/NLP/index
-:link-type: doc
-
-Cards can also link to section index pages, not just leaf documents.
-:::
-
-::::
-
-### Dropdowns
-
-::::{dropdown} When to use BF16 vs FP16
-BF16 and FP16 both use 16 bits, but allocate them differently:
-
-| Format | Exponent bits | Mantissa bits | Max value |
-|--------|--------------|---------------|-----------|
-| FP16   | 5            | 10            | 65504     |
-| BF16   | 8            | 7             | ~3.4×10³⁸ |
-
-**Use BF16** on Ampere+ GPUs (A100, H100, RTX 30xx+) — same dynamic range as FP32, avoids overflow during training.
-
-**Use FP16** only when targeting older hardware (V100, T4) that lacks BF16 support. Requires loss scaling to prevent underflow.
-::::
-
-::::{dropdown} KV Cache — How it works
-:open:
-
-During autoregressive generation, every new token attends to all previous tokens. Without a cache, keys and values are recomputed from scratch at each step — $O(T^2)$ total work.
-
-With a KV cache:
-1. On the first forward pass (prefill), compute and **store** $K, V$ for the entire prompt.
-2. On each decode step, compute $K, V$ for only the **new token** and append to the cache.
-3. Attention uses the full cached $K, V$ — $O(T)$ work per step.
-
-Memory cost: `2 × num_layers × num_heads × d_head × seq_len × dtype_bytes` per sequence.
-::::
-
-### Badges
-
-Use badges inline to tag content with status or category labels.
-
-{bdg-primary}`primary` {bdg-secondary}`secondary` {bdg-success}`stable` {bdg-info}`info` {bdg-warning}`experimental` {bdg-danger}`deprecated` {bdg-dark}`dark` {bdg-light}`light`
-
-Example in context: Flash Attention 2 {bdg-success}`stable` is the current default in HuggingFace Transformers {bdg-info}`≥4.36`.
-
-Outline variants: {bdg-primary-line}`outline primary` {bdg-success-line}`outline success` {bdg-warning-line}`outline warning`
 
 ---
 
@@ -436,9 +516,9 @@ Outline variants: {bdg-primary-line}`outline primary` {bdg-success-line}`outline
 
 ### Spanning Cells
 
-Neither pipe tables nor `{list-table}` support `colspan`/`rowspan`. Use a raw HTML `<table>` block directly in the Markdown file.
+Neither pipe tables nor `{list-table}` support `colspan`/`rowspan`. Use a raw HTML `<table>` block directly in the Markdown file. Use `class="docutils align-default"` to render it beautifully.
 
-<table>
+<table class="docutils align-default">
   <thead>
     <tr>
       <th rowspan="2">Format</th>
@@ -489,33 +569,15 @@ Neither pipe tables nor `{list-table}` support `colspan`/`rowspan`. Use a raw HT
 
 ---
 
-## Cross-References
-
-Because `autosectionlabel` is enabled with `autosectionlabel_prefix_document = True`, every heading gets an anchor prefixed by its document path.
-
-- Link to a heading on this page: {ref}`pages/Demo/1-demo:Mermaid Diagrams`
-- Link to a heading on this page with custom text: {ref}`jump to diagrams <pages/Demo/1-demo:Mermaid Diagrams>`
-- Link to a heading in another file: `` {ref}`pages/Natural Language Processing/Attentions/index:Attentions` ``
-- Link to another page by path: {doc}`../Natural_Language_Processing/Attentions/index`
-
----
-
-## Figures
-
-```{figure} ../../assets/favicon.png
-:width: 64px
-:align: center
-:alt: DS Notebook logo
-
-*Figure 1.* Use `{figure}` to add a caption and alt text to any image.
-```
-
----
-
 ## Block Quotes and Definitions
 
 > "Attention is all you need."
 > — Vaswani et al., 2017
+
+Block quote with attribution (`attrs_block` extension):
+
+{attribution="Vaswani et al., 2017"}
+> We need no recurrence — attention alone suffices.
 
 Definition list (term followed by indented definition):
 
@@ -527,3 +589,547 @@ KV Cache
 
 **Perplexity**
 : $\text{PPL} = \exp\!\left(-\frac{1}{T}\sum_{t=1}^{T} \log p(w_t \mid w_{<t})\right)$ — lower is better.
+
+---
+
+## Field Lists
+
+Field lists are key-value mappings (`:key: value`), based on reStructuredText syntax. Enabled by the `fieldlist` extension.
+
+### Basic Syntax
+
+:name only:
+:model: GPT-4
+:*Nested syntax*: Both name and body support **bold**, `code`, and $math$.
+:Multi-line: The second and subsequent lines only need to be indented
+   to align with the body, not the colon.
+:Blocks:
+
+  Body can contain any block syntax:
+
+  - item one
+  - item two
+
+  ```python
+  print("hello")
+  ```
+
+### API Docstring
+
+The canonical use case — document a function's parameters, return values, and exceptions:
+
+```{py:function} scaled_dot_product(q, k, v, mask=None)
+
+Compute scaled dot-product attention.
+
+:param torch.Tensor q: Query matrix of shape ``(B, T, d_k)``.
+:param torch.Tensor k: Key matrix of shape ``(B, T, d_k)``.
+:param torch.Tensor v: Value matrix of shape ``(B, T, d_v)``.
+:param mask: Optional boolean mask; masked positions are set to ``-1e9``.
+:type mask: torch.Tensor or None
+:return: Attention output of shape ``(B, T, d_v)``.
+:rtype: torch.Tensor
+:raises ValueError: if ``q`` and ``k`` have mismatched last dimensions.
+```
+
+---
+
+## Cross-References
+
+Because `autosectionlabel` is enabled with `autosectionlabel_prefix_document = True`, every heading gets an anchor prefixed by its document path.
+
+- Link to a heading on this page: {ref}`pages/Demo/1-demo:Mermaid Diagrams`
+- Link to a heading on this page with custom text: {ref}`jump to diagrams <pages/Demo/1-demo:Mermaid Diagrams>`
+- Link to a heading in another file: `` {ref}`pages/Natural Language Processing/Attentions/index:Attentions` ``
+- Link to another page by path: {doc}`../Natural_Language_Processing/Attentions/index`
+
+### Heading Anchors (Markdown fragments)
+
+With `myst_heading_anchors = 2`, headings (h1–h2) also get GitHub-style slug `id`s, so you can link with a plain Markdown fragment instead of the `{ref}` role:
+
+- [Jump to Math](#math)
+- [Jump to Code Blocks](#code-blocks)
+
+The slug is the lower-cased heading text with spaces replaced by hyphens.
+
+### External Links by Scheme
+
+Custom `myst_url_schemes` give short link prefixes for common references:
+
+- arXiv paper: [Attention Is All You Need](arxiv:1706.03762)
+- DOI: [BERT](doi:10.18653/v1/N19-1423)
+- Wikipedia: [Transformer](wiki:Transformer_(deep_learning_architecture))
+
+### Intersphinx (external project docs)
+
+With `sphinx.ext.intersphinx` mapped to Python, NumPy, and PyTorch, you can link straight to a symbol in their docs:
+
+- Python: {py:func}`print`
+- NumPy: {py:func}`numpy.matmul`
+- PyTorch: {py:class}`torch.nn.MultiheadAttention`
+
+### Hover Tooltips
+
+`sphinx-tippy` adds hover-preview tooltips to internal cross-references automatically — hover over {ref}`pages/Demo/1-demo:Mermaid Diagrams` above to see a preview of the target section. No syntax needed; it applies to all internal links.
+
+---
+
+## Grids
+
+Grids use a 12-column system that adapts to screen size. The argument is 1–4 integers for xs / sm / md / lg breakpoints.
+
+### Responsive Columns
+
+Resize the browser to see columns adapt (1 on mobile, 4 on large screens):
+
+::::{grid} 1 2 3 4
+:outline:
+:gutter: 2
+
+:::{grid-item-card} XS
+1 column on mobile.
+:::
+:::{grid-item-card} SM
+2 columns on small.
+:::
+:::{grid-item-card} MD
+3 columns on medium.
+:::
+:::{grid-item-card} LG
+4 columns on large.
+:::
+::::
+
+### Gutter Control
+
+`:gutter:` controls spacing. One number for all sizes; four numbers for xs / sm / md / lg:
+
+::::{grid} 2
+:gutter: 3 3 4 5
+
+:::{grid-item-card}
+Small gutter on mobile, larger on desktop.
+:::
+:::{grid-item-card}
+Spacing adjusts responsively.
+:::
+::::
+
+### Item-Level Column Width
+
+Override how many columns (out of 12) a single item spans with `:columns:`:
+
+::::{grid} 2
+
+:::{grid-item-card}
+:columns: 12 8 8 8
+
+Spans full width on mobile, 8/12 on larger screens.
+:::
+:::{grid-item-card}
+:columns: 12 4 4 4
+
+Spans full width on mobile, 4/12 on larger screens.
+:::
+:::{grid-item-card}
+:columns: auto
+
+Auto width based on content.
+:::
+::::
+
+### Nesting
+
+Grids can be nested to create complex adaptive layouts:
+
+::::::{grid} 1 1 2 2
+:gutter: 2
+
+:::::{grid-item}
+::::{grid} 1 1 1 1
+:gutter: 1
+
+:::{grid-item-card} Item 1.1
+Multi-line
+
+content
+:::
+:::{grid-item-card} Item 1.2
+Content
+:::
+::::
+:::::
+
+:::::{grid-item}
+::::{grid} 1 1 1 1
+:gutter: 1
+
+:::{grid-item-card} Item 2.1
+Content
+:::
+:::{grid-item-card} Item 2.2
+Content
+:::
+:::{grid-item-card} Item 2.3
+Content
+:::
+::::
+:::::
+
+::::::
+
+### Options Reference
+
+**`grid` options**
+
+| Option | Values | Description |
+|--------|--------|-------------|
+| `gutter` | 0–5 or four values | Spacing between items |
+| `margin` | 0–5 / `auto` | Outer margin |
+| `padding` | 0–5 | Inner padding |
+| `outline` | flag | Border around the grid |
+| `reverse` | flag | Reverse item order |
+| `class-container` | CSS class | Container element |
+| `class-row` | CSS class | Row element |
+
+**`grid-item` options**
+
+| Option | Values | Description |
+|--------|--------|-------------|
+| `columns` | 1–12 / `auto` / four values | Column span |
+| `margin` | 0–5 / `auto` | Outer margin |
+| `padding` | 0–5 | Inner padding |
+| `child-direction` | `column` / `row` | Direction of children |
+| `child-align` | `start` / `end` / `center` / `justify` / `spaced` | Child alignment |
+| `outline` | flag | Border around item |
+| `class` | CSS class | Item element |
+
+**`grid-item-card` options** — same as `grid-item` plus all `card` options below.
+
+---
+
+## Design Components
+
+### Tabs
+
+Use tabs to show the same concept across frameworks or to separate long alternatives.
+
+::::{tab-set}
+
+:::{tab-item} PyTorch
+```python
+import torch.nn.functional as F
+
+output = F.scaled_dot_product_attention(
+    query, key, value,
+    attn_mask=None,
+    dropout_p=0.0,
+    is_causal=True,
+)
+```
+:::
+
+:::{tab-item} JAX
+```python
+import jax.numpy as jnp
+
+def dot_product_attention(q, k, v, mask=None):
+    d_k = q.shape[-1]
+    scores = jnp.matmul(q, k.swapaxes(-2, -1)) / jnp.sqrt(d_k)
+    if mask is not None:
+        scores = jnp.where(mask, scores, -1e9)
+    weights = jax.nn.softmax(scores, axis=-1)
+    return jnp.matmul(weights, v)
+```
+:::
+
+:::{tab-item} NumPy
+```python
+import numpy as np
+
+def attention(Q, K, V):
+    d_k = Q.shape[-1]
+    scores = Q @ K.T / np.sqrt(d_k)
+    weights = np.exp(scores - scores.max(-1, keepdims=True))
+    weights /= weights.sum(-1, keepdims=True)
+    return weights @ V
+```
+:::
+
+::::
+
+### Synced Tabs
+
+Add `:sync-group:` to each `tab-set` and `:sync:` to each `tab-item` — selecting a tab in one set syncs all sets with the same group:
+
+::::{tab-set}
+:sync-group: framework
+
+:::{tab-item} PyTorch
+:sync: pt
+`torch.optim.AdamW`
+:::
+:::{tab-item} JAX
+:sync: jax
+`optax.adamw`
+:::
+::::
+
+::::{tab-set}
+:sync-group: framework
+
+:::{tab-item} PyTorch
+:sync: pt
+`torch.nn.CrossEntropyLoss`
+:::
+:::{tab-item} JAX
+:sync: jax
+`optax.softmax_cross_entropy`
+:::
+::::
+
+### tab-set-code
+
+Shorthand for language-labelled, auto-synced code examples. Tabs are labelled and synced by language:
+
+````{tab-set-code}
+```python
+import torch
+loss = torch.nn.CrossEntropyLoss()(logits, labels)
+```
+
+```bash
+pip install torch torchvision
+```
+````
+
+**Tab options**
+
+| Option | Description |
+|--------|-------------|
+| `tab-set` `:sync-group:` | Group name for synchronisation (default: `tab`) |
+| `tab-set` `:class:` | CSS class on container |
+| `tab-item` `:sync:` | Key for syncing across sets |
+| `tab-item` `:selected:` | Pre-select this tab |
+| `tab-item` `:name:` | Referenceable anchor |
+| `tab-item` `:class-container:` `:class-label:` `:class-content:` | CSS overrides |
+
+---
+
+### Cards
+
+Use cards to organise related concepts side-by-side.
+
+::::{grid} 2
+
+:::{grid-item-card} Encoder-only Models
+**Examples:** BERT, RoBERTa, DeBERTa
+
+Best for tasks that require understanding the full context simultaneously — classification, NER, extractive QA.
+
+Trained with Masked Language Modelling (MLM).
+:::
+
+:::{grid-item-card} Decoder-only Models
+**Examples:** GPT-4, LLaMA, Mistral
+
+Best for generation tasks. Process tokens left-to-right with causal masking.
+
+Trained with next-token prediction (CLM).
+:::
+
+:::{grid-item-card} Encoder-Decoder Models
+**Examples:** T5, BART, mT5
+
+Best for seq2seq tasks — translation, summarisation, generative QA.
+
+Encoder builds full context; decoder attends to it via cross-attention.
+:::
+
+:::{grid-item-card} Mixture of Experts
+**Examples:** Mixtral, Switch Transformer
+
+Scales parameter count without scaling compute. A router sends each token to $k$ of $N$ expert FFN layers.
+
+Active params ≪ total params.
+:::
+
+::::
+
+### Card with Header and Footer
+
+Anything before the first `^^^` is the header; anything after the last `+++` is the footer:
+
+:::{card} Attention Score
+Flash Attention v3
+^^^
+$$\text{Attention}(Q, K, V) = \text{softmax}\!\left(\frac{QK^\top}{\sqrt{d_k}}\right)V$$
++++
+H100 only · IO-aware · FP8
+:::
+
+### Card Alignment
+
+Use `:text-align:` and `:margin: auto` to control card alignment:
+
+::::{grid} 3
+
+:::{grid-item-card} Left
+:text-align: left
+
+Default alignment.
+:::
+
+:::{grid-item-card} Centre
+:text-align: center
+
+Content centred.
+:::
+
+:::{grid-item-card} Right
+:text-align: right
+
+Content right-aligned.
+:::
+
+::::
+
+### Card Carousel
+
+A horizontally scrollable row of fixed-width cards. The argument is the number of cards visible at once:
+
+::::{card-carousel} 3
+
+:::{card} Transformer
+Encoder-decoder. Attention is $O(N^2)$ in sequence length.
+:::
+:::{card} Flash Attention
+IO-aware rewrite. Reduces HBM reads to $O(N^2/M)$.
+:::
+:::{card} RoPE
+Rotary position encoding applied to Q/K directly.
+:::
+:::{card} GQA
+Grouped Query Attention — shares K/V heads to cut KV cache size.
+:::
+:::{card} SWA
+Sliding Window Attention — limits attention to a local window.
+:::
+::::
+
+### Cards with Links
+
+```{note}
+For `:link-type: doc`, paths with spaces in directory names are not supported by sphinx-design.
+Use `:link-type: url` with a relative `.html` path, or only link to docs whose full path has no spaces.
+```
+
+::::{grid} 2
+
+:::{grid-item-card} Inference Notes
+:link: ../Interview/Inference/1-inference
+:link-type: doc
+
+Click this card to navigate to a page. Add `:link:` (doc path) and `:link-type: doc` to any card to make the whole card clickable.
+:::
+
+:::{grid-item-card} NLP Index
+:link: ../Interview/NLP/index
+:link-type: doc
+
+Cards can also link to section index pages, not just leaf documents.
+:::
+
+::::
+
+**Card options**
+
+| Option | Values | Description |
+|--------|--------|-------------|
+| `width` | `auto` `25%` `50%` `75%` `100%` | Card width |
+| `margin` | 0–5 / `auto` | Outer margin |
+| `text-align` | `left` `right` `center` `justify` | Text alignment |
+| `img-background` | URI | Image behind content |
+| `img-top` | URI | Image above content |
+| `img-bottom` | URI | Image below content |
+| `img-alt` | string | Alt text for image |
+| `link` | URL or path | Makes entire card clickable |
+| `link-type` | `url` `ref` `doc` `any` | Link resolution type |
+| `link-alt` | string | Screen-reader link text |
+| `shadow` | `none` `sm` `md` `lg` | Drop shadow size |
+| `class-card` `class-header` `class-body` `class-title` `class-footer` | CSS class | CSS overrides |
+
+---
+
+### Dropdowns
+
+::::{dropdown} When to use BF16 vs FP16
+BF16 and FP16 both use 16 bits, but allocate them differently:
+
+| Format | Exponent bits | Mantissa bits | Max value |
+|--------|--------------|---------------|-----------|
+| FP16   | 5            | 10            | 65504     |
+| BF16   | 8            | 7             | ~3.4×10³⁸ |
+
+**Use BF16** on Ampere+ GPUs (A100, H100, RTX 30xx+) — same dynamic range as FP32, avoids overflow during training.
+
+**Use FP16** only when targeting older hardware (V100, T4) that lacks BF16 support. Requires loss scaling to prevent underflow.
+::::
+
+::::{dropdown} KV Cache — How it works
+:open:
+
+During autoregressive generation, every new token attends to all previous tokens. Without a cache, keys and values are recomputed from scratch at each step — $O(T^2)$ total work.
+
+With a KV cache:
+1. On the first forward pass (prefill), compute and **store** $K, V$ for the entire prompt.
+2. On each decode step, compute $K, V$ for only the **new token** and append to the cache.
+3. Attention uses the full cached $K, V$ — $O(T)$ work per step.
+
+Memory cost: `2 × num_layers × num_heads × d_head × seq_len × dtype_bytes` per sequence.
+::::
+
+### Dropdown with Animation and Color
+
+::::{dropdown} Flash Attention — Why it's faster
+:color: info
+:icon: info
+:animate: fade-in-slide-down
+
+Standard attention materialises the full $N \times N$ score matrix in HBM — that's the bottleneck, not FLOPs.
+
+Flash Attention tiles Q, K, V into SRAM blocks and fuses softmax + matmul into a single kernel, never writing the full score matrix to HBM.
+::::
+
+**Dropdown options**
+
+| Option | Values | Description |
+|--------|--------|-------------|
+| `open` | flag | Open by default |
+| `color` | `primary` `secondary` `success` `danger` `warning` `info` `light` `dark` `muted` | Header color |
+| `icon` | octicon name | Icon in header |
+| `chevron` | `right-down` `down-up` | Chevron direction |
+| `animate` | `fade-in` `fade-in-slide-down` | Open animation |
+| `margin` | 0–5 / `auto` | Outer margin |
+| `name` | string | Referenceable anchor |
+| `class-container` `class-title` `class-body` | CSS class | CSS overrides |
+
+---
+
+### Badges
+
+Use badges inline to tag content with status or category labels.
+
+**Filled variants:**
+
+{bdg}`plain` {bdg-primary}`primary` {bdg-secondary}`secondary` {bdg-success}`success` {bdg-info}`info` {bdg-warning}`warning` {bdg-danger}`danger` {bdg-light}`light` {bdg-muted}`muted` {bdg-dark}`dark` {bdg-white}`white` {bdg-black}`black`
+
+**Outline variants:**
+
+{bdg-primary-line}`primary` {bdg-secondary-line}`secondary` {bdg-success-line}`success` {bdg-info-line}`info` {bdg-warning-line}`warning` {bdg-danger-line}`danger` {bdg-light-line}`light` {bdg-muted-line}`muted` {bdg-dark-line}`dark` {bdg-white-line}`white` {bdg-black-line}`black`
+
+**In context:** Flash Attention 2 {bdg-success}`stable` is the current default in HuggingFace Transformers {bdg-info}`≥4.36`. RoPE embeddings are {bdg-success-line}`production` while ALiBi is {bdg-warning-line}`legacy`.
+
+**Link badges** — clickable, using `{bdg-link-*}`:
+
+{bdg-link-primary}`https://example.com` {bdg-link-primary-line}`Documentation <https://example.com>`

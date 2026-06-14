@@ -119,6 +119,20 @@ footer {
     row-gap: 1.5rem;
 }
 
+.mermaid-container > pre > svg {
+    height: auto !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    max-height: 500px;
+}
+
+/* Mermaid diagram size utilities */
+.mermaid-w-xs   { max-width: 250px;  margin: 0 auto; }
+.mermaid-w-sm   { max-width: 400px;  margin: 0 auto; }
+.mermaid-w-md   { max-width: 600px;  margin: 0 auto; }
+.mermaid-w-lg   { max-width: 850px;  margin: 0 auto; }
+.mermaid-w-full { max-width: 100%;   margin: 0 auto; }
+
 /* Force light theme for mermaid fullscreen modal regardless of OS dark mode */
 .mermaid-fullscreen-modal.dark-theme {
     background: rgba(255, 255, 255, 0.98) !important;
@@ -150,3 +164,16 @@ footer {
     background: rgba(255, 255, 255, 1) !important;
     box-shadow: 0 3px 10px rgba(0, 0, 0, 0.3) !important;
 }
+
+/* Task lists (MyST `tasklist` extension). */
+.rst-content .contains-task-list {
+    list-style: none;
+    margin-left: 0;
+    padding-left: 0;
+}
+
+.rst-content .task-list-item {
+    margin: 0 .5rem;
+    list-style: none;
+}
+

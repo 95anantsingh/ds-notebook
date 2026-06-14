@@ -66,7 +66,13 @@ def remove_existing_numbers(filename: str) -> str:
 
 def rename_files_with_numbers(path: str) -> None:
     """
-    Rename all .md files in a directory with numbered prefixes
+    Rename all .md files in a directory with numbered prefixes.
+
+    Files that already have a numeric prefix keep their number (only
+    zero-padding is normalized).  Files without a prefix are sorted
+    alphabetically and assigned numbers starting from max(existing)+1.
+    If two already-numbered files share the same number, a warning is
+    printed and the process exits so the user can resolve the conflict.
     """
     if not os.path.exists(path):
         return
@@ -77,37 +83,64 @@ def rename_files_with_numbers(path: str) -> None:
     if not md_files:
         return
 
-    # Sort files alphanumerically (without existing numbers)
-    clean_files = []
+    # Separate into numbered (has leading \d+[\s-]+) and unnumbered files
+    numbered = []   # (original_name, number, clean_name)
+    unnumbered = [] # (original_name, clean_name)
+
     for f in md_files:
         clean_name = remove_existing_numbers(f)
-        clean_files.append((f, clean_name))
+        match = re.match(r"^(\d+)[\s-]+", f)
+        if match:
+            numbered.append((f, int(match.group(1)), clean_name))
+        else:
+            unnumbered.append((f, clean_name))
 
-    # Sort by clean names
-    clean_files.sort(key=lambda x: alphanumeric_sort_key(x[1]))
+    # Detect conflicts among already-numbered files
+    seen: dict = {}
+    conflicts = []
+    for original, num, clean in numbered:
+        if num in seen:
+            conflicts.append((seen[num], original, num))
+        else:
+            seen[num] = original
 
-    # Determine number of digits needed
-    total_files = len(clean_files)
-    digits = len(str(total_files))
+    if conflicts:
+        print(f"❌ Number conflicts in {path}:")
+        for f1, f2, n in conflicts:
+            print(f"   Number {n}: '{f1}'  vs  '{f2}'")
+        print("Resolve conflicts manually (rename one of the files) and re-run.")
+        if DRY_RUN:
+            _mark_change(f"Number conflicts in {path}")
+        else:
+            sys.exit(1)
+        return
 
-    # Rename files with proper numbering
-    for i, (original_name, clean_name) in enumerate(clean_files, 1):
+    # Assign numbers to unnumbered files (above max existing number)
+    max_existing = max((n for _, n, _ in numbered), default=0)
+    unnumbered.sort(key=lambda x: alphanumeric_sort_key(x[1]))
+    for i, (original, clean) in enumerate(unnumbered):
+        numbered.append((original, max_existing + 1 + i, clean))
+
+    # Determine zero-padding width from total file count
+    digits = len(str(len(numbered)))
+
+    # Sort by assigned number for deterministic processing
+    numbered.sort(key=lambda x: x[1])
+
+    for original_name, num, clean_name in numbered:
         old_path = os.path.join(path, original_name)
 
-        # Create new filename with number prefix
-        number_prefix = str(i).zfill(digits)
+        number_prefix = str(num).zfill(digits)
         kebab_name = clean_name.replace(".md", "").lower().replace(" ", "-") + ".md"
         new_name = f"{number_prefix}-{kebab_name}"
         new_path = os.path.join(path, new_name)
 
-        # Only rename if the name would change
         if original_name != new_name:
             if DRY_RUN:
                 _mark_change(f"Would rename: {original_name} -> {new_name}")
             else:
-                # Handle case where target file already exists
                 if os.path.exists(new_path):
-                    temp_path = os.path.join(path, f"temp_{i}_{kebab_name}")
+                    temp_path = os.path.join(path, f"temp_{num}_{kebab_name}")
                     os.rename(old_path, temp_path)
                     if os.path.exists(new_path):
                         os.remove(new_path)

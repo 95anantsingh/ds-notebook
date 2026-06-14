@@ -106,14 +106,14 @@ Prepended to every sequence. Its final hidden state is trained to aggregate sent
 
 **Q: How do you implement causal masking?**
 
-```{toggle}
+````{toggle}
 ```python
 mask = torch.triu(torch.ones(T, T, dtype=torch.bool), diagonal=1)
 # mask[i,j] = True when j > i — blocks future tokens
 scores = scores.masked_fill(mask, float('-inf'))
 ```
 Register as a buffer in `__init__` so it moves with the model; slice to `[:T, :T]` in `forward`.
-```
+````
 
 **Q: What's KV caching and why does it matter?**
 
@@ -163,14 +163,14 @@ CNNs have inductive biases for locality (convolution) and translation invariance
 
 **Q: What's the efficient way to implement patch embedding?**
 
-```{toggle}
+````{toggle}
 ```python
 # nn.Conv2d with kernel_size=patch_size, stride=patch_size extracts non-overlapping patches
 # and projects in one operation — equivalent to unfold + linear
 self.patch_embed = nn.Conv2d(in_channels, d_model, kernel_size=patch_size, stride=patch_size)
 # (B, C, H, W) → (B, d_model, H/P, W/P) → flatten → (B, N, d_model)
 ```
-```
+````
 
 **Q: What happens if image size isn't divisible by patch size?**
 

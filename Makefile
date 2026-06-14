@@ -25,7 +25,7 @@ update: ## Upgrade all dependencies to latest versions
 	@echo "All dependencies upgraded!"
 
 #* Build *
-.PHONY: html view check clean
+.PHONY: html check serve dev clean
 html: ## Run indexer and build HTML documentation
 	python $(SOURCEDIR)/indexer.py
 	$(SPHINXBUILD) -M html "$(SOURCEDIR)" "$(BUILDDIR)" $(SPHINXOPTS) $(O)
@@ -33,8 +33,11 @@ html: ## Run indexer and build HTML documentation
 check: ## Verify files are correctly named and TOC is up to date (used in CI)
 	python $(SOURCEDIR)/indexer.py --check
 
-view: ## Open built HTML documentation in browser
+serve: ## Open built HTML documentation in browser
 	open "$(BUILDDIR)/html/index.html"
+
+dev: ## Watch for changes and rebuild with live reload
+	sphinx-autobuild "$(SOURCEDIR)" "$(BUILDDIR)/html" $(SPHINXOPTS)
 
 clean: ## Remove the build directory
 	rm -rf "$(BUILDDIR)"

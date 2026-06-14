@@ -7,9 +7,9 @@
 
 ## Implementations
 
-::::{tab-set}
+:::::{tab-set}
 
-:::{tab-item} Sinusoidal {bdg-secondary}`original paper`
+::::{tab-item} Sinusoidal {bdg-secondary}`original paper`
 
 $$PE_{(pos, 2i)} = \sin\!\left(\frac{pos}{10000^{2i/d_{\text{model}}}}\right), \quad PE_{(pos, 2i+1)} = \cos\!\left(\frac{pos}{10000^{2i/d_{\text{model}}}}\right)$$
 
@@ -42,10 +42,26 @@ class SinusoidalPositionalEncoding(nn.Module):
         return self.dropout(x)
 ```
 
-**Why it generalizes**: The relative positions are encoded in the phase difference between sin/cos curves, so the model can extrapolate beyond training sequence lengths.
+:::{dropdown} Wondering how `div` equals the inverse of the denominator?
+The code computes the **inverse frequency** $1 / 10000^{2i/d_{\text{model}}}$ in log-space for stability and speed.
+
+Using the identity $a^b = \exp(b \cdot \ln a)$:
+
+$$\frac{1}{10000^{2i/d_{\text{model}}}} = \exp\!\left(-\frac{2i}{d_{\text{model}}} \cdot \ln 10000\right) = \exp\!\left(2i \cdot \frac{-\ln 10000}{d_{\text{model}}}\right)$$
+
+Mapping to the code:
+
+- `torch.arange(0, d_model, 2)` → $2i$ for $i = 0, 1, \ldots, d_{\text{model}}/2 - 1$
+- `-math.log(10000.0) / d_model` → $-\ln(10000) / d_{\text{model}}$
+- `torch.exp(...)` wraps the product
+
+So `pos * div` is exactly $pos / 10000^{2i/d_{\text{model}}}$. Doing it via `exp` avoids `pow`, stays numerically stable for large `d_model`, and vectorizes cleanly.
 :::
 
-:::{tab-item} Learned Absolute {bdg-info}`BERT, GPT-2`
+**Why it generalizes**: The relative positions are encoded in the phase difference between sin/cos curves, so the model can extrapolate beyond training sequence lengths.
+::::
+
+::::{tab-item} Learned Absolute {bdg-info}`BERT, GPT-2`
 
 ```python
 class LearnedPositionalEncoding(nn.Module):
@@ -63,11 +79,10 @@ class LearnedPositionalEncoding(nn.Module):
 ```
 
 Simpler and typically works as well as sinusoidal within the training length. Does **not** generalize to sequences longer than `max_len`.
-:::
-
 ::::
 
----
+:::::
+
 
 ## RoPE (Rotary Positional Embedding)
 

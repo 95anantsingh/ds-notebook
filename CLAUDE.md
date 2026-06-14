@@ -61,7 +61,7 @@ Both the root `source/index.md` and all subdirectory `index.md` files use the sa
 <!-- TOC END -->
 ```
 
-Only the block between those sentinels is rewritten on each run. Everything outside — the heading, intro prose, custom sections — is preserved. **Never manually edit inside the sentinel block.**
+Only the block between those sentinels is rewritten on each run. This block needs must be under the top heading of the page ("#"). Everything outside — the heading, intro prose, custom sections — is preserved. **Never manually edit inside the sentinel block.**
 
 - New subdirectory indexes are created with `# <Section Name>` heading + sentinel block.
 - Existing indexes: only the sentinel block is updated; all other content survives.

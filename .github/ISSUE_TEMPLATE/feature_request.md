@@ -1,13 +1,13 @@
 ---
-name: Feature request
-about: Suggest an idea or improvement
+name: Site improvement
+about: Suggest a new component, layout change, or tooling improvement
 labels: enhancement
 ---
 
-## Problem
-<!-- What problem does this solve? -->
+## What you'd like
+<!-- Describe the improvement -->
 
-## Proposed solution
+## Why it's useful
 
 
 ## Alternatives considered

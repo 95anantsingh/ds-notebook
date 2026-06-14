@@ -3,7 +3,7 @@
 
 > **Paper**: "Attention Is All You Need" (Vaswani et al., 2017)
 > **Interview cheat sheet**: {ref}`Attention Implementation Guide <attention-implementation-guide>`
-> **Flash Attention deep dive**: [Flash Attention](../Attentions/3-flash-attention.md)
+> **Flash Attention deep dive**: [Flash Attention](../Attentions/09-flash-attention.md)
 
 The fundamental building block of the transformer. Computes a weighted sum of values, where weights are determined by the compatibility of queries with keys.
 
