@@ -81,6 +81,7 @@ myst_url_schemes = {
 suppress_warnings = ["mystnb.unknown_mime_type", "myst.strikethrough"]
 
 nb_execution_mode = "cache"
+nb_execution_show_tb = True
 
 # Cross-link into external project docs by symbol (intersphinx).
 intersphinx_mapping = {

@@ -122,14 +122,14 @@ Given that -- $B = 3$, $T = 3$, $d_k = 4$, $d_v = 2$. The following four steps r
 :gutter: 3
 
 :::{grid-item}
-:columns: 12 12 12 4
+:columns: 12 12 12 5
 :child-align: center
 **Step 1 -- Scores**: dot every query row with every key row.
 $$\text{scores} = QK^\top \quad \in \mathbb{R}^{B \times T \times T}$$
 :::
 
 :::{grid-item}
-:columns: 12 12 12 8
+:columns: 12 12 12 7
 :child-align: start
 ```{glue} scores_plot
 :doc: assets/scaled-dot-product.ipynb
@@ -141,14 +141,14 @@ $$\text{scores} = QK^\top \quad \in \mathbb{R}^{B \times T \times T}$$
 :gutter: 3
 
 :::{grid-item}
-:columns: 12 12 12 4
+:columns: 12 12 12 5
 :child-align: center
 **Step 2 -- Scale**: divide by $\sqrt{d_k} = 2$ to keep the variance near 1 before softmax.
 $$\text{scaled} = \frac{QK^\top}{\sqrt{d_k}}$$
 :::
 
 :::{grid-item}
-:columns: 12 12 12 8
+:columns: 12 12 12 7
 :child-align: start
 ```{glue} scaled_plot
 :doc: assets/scaled-dot-product.ipynb
@@ -160,14 +160,14 @@ $$\text{scaled} = \frac{QK^\top}{\sqrt{d_k}}$$
 :gutter: 3
 
 :::{grid-item}
-:columns: 12 12 12 4
+:columns: 12 12 12 5
 :child-align: center
 **Step 3 -- Softmax** (row-wise): each row becomes a probability distribution summing to 1.
 $$W = \text{softmax}(\text{scaled})$$
 :::
 
 :::{grid-item}
-:columns: 12 12 12 8
+:columns: 12 12 12 7
 :child-align: start
 ```{glue} weights_plot
 :doc: assets/scaled-dot-product.ipynb
@@ -179,14 +179,14 @@ $$W = \text{softmax}(\text{scaled})$$
 :gutter: 3
 
 :::{grid-item}
-:columns: 12 12 12 4
+:columns: 12 12 12 5
 :child-align: center
 **Step 4 -- Output**: blend the value rows by the attention weights.
 $$\text{Output} = WV \quad \in \mathbb{R}^{B \times T \times d_v}$$
 :::
 
 :::{grid-item}
-:columns: 12 12 12 8
+:columns: 12 12 12 7
 :child-align: start
 ```{glue} output_plot
 :doc: assets/scaled-dot-product.ipynb
