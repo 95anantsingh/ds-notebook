@@ -1,3 +1,13 @@
+---
+jupytext:
+  text_representation:
+    format_name: myst
+kernelspec:
+  display_name: Python 3
+  language: python
+  name: python3
+---
+
 # Component Reference
 
 A living reference for every component available when writing notes on this site.
@@ -188,7 +198,7 @@ for epoch in range(num_epochs):
 
 `{literalinclude}` embeds source from a file. Use `:start-after:` / `:end-before:` to extract a slice:
 
-```{literalinclude} examples/example.py
+```{literalinclude} assets/example.py
 :language: python
 :start-after: start example
 :end-before: end example
@@ -1133,3 +1143,178 @@ Use badges inline to tag content with status or category labels.
 **Link badges** — clickable, using `{bdg-link-*}`:
 
 {bdg-link-primary}`https://example.com` {bdg-link-primary-line}`Documentation <https://example.com>`
+
+---
+
+## Buttons
+
+Buttons let users jump to an external (`{button-link}`) or internal (`{button-ref}`) target with a single click.
+
+```{button-link} https://sphinx-design.readthedocs.io
+:color: primary
+:shadow:
+Sphinx Design docs
+```
+
+```{button-ref} 1-demo
+:ref-type: doc
+:color: info
+:outline:
+Back to this page
+```
+
+By default Sphinx renders the button content as **raw text** — so `**Bold text**` with `:ref-type: ref` shows the asterisks literally. With `:ref-type: myst`, the content is parsed as Markdown and renders properly:
+
+```{button-ref} 1-demo
+:ref-type: myst
+:color: success
+**Bold** button label
+```
+
+Use `:click-parent:` to make the button's parent container clickable too:
+
+::::{card} Card with an expanded button
+Click anywhere on this card.
++++
+:::{button-ref} 1-demo
+:ref-type: doc
+:expand:
+:color: secondary
+:click-parent:
+Open
+:::
+::::
+
+**`{button-link}` / `{button-ref}` options**
+
+| Option | Description |
+|--------|-------------|
+| `ref-type` | (`button-ref` only) Reference type: `any` (default), `ref`, `doc`, or `myst` |
+| `color` | Semantic color: `primary` `secondary` `success` `danger` `warning` `info` `light` `dark` `muted` |
+| `outline` | Outline color variant |
+| `align` | `left` `right` `center` `justify` |
+| `expand` | Expand to fit parent width |
+| `click-parent` | Make parent container also clickable |
+| `tooltip` | Tooltip on hover |
+| `shadow` | Add shadow CSS |
+| `class` | Additional CSS classes |
+
+---
+
+## Executable Code Cells
+
+Unlike `{code-block}` (which only displays source), `{code-cell}` **runs** the code at build time and renders its output below. The page needs a jupytext frontmatter header (see the top of this file) so myst-nb treats it as a notebook.
+
+```{code-cell} python
+import math
+[round(math.sqrt(n), 3) for n in range(1, 6)]
+```
+
+The last expression is auto-displayed, just like in a Jupyter notebook.
+
+**Hide the input** with `:tags: [hide-input]` — the code becomes a collapsible toggle, output always shown:
+
+```{code-cell} python
+:tags: [hide-input]
+total = sum(range(1, 101))
+f"Sum of 1..100 = {total}"
+```
+
+**Show output only** with `:tags: [remove-input]` — the source is dropped entirely (used for the plots on this site):
+
+```{code-cell} python
+:tags: [remove-input]
+print("Generated at build time — no input cell shown.")
+```
+
+**Cell tags**
+
+| Tag | Effect |
+|-----|--------|
+| `hide-input` | Collapse the source into a toggle |
+| `hide-output` | Collapse the output into a toggle |
+| `remove-input` | Drop the source; keep output |
+| `remove-output` | Drop the output; keep source |
+| `remove-cell` | Drop the cell entirely (runs, shows nothing) |
+| `raises-exception` | Allow the cell to error without failing the build |
+
+```{note}
+Cells execute top-to-bottom in a shared kernel, so later cells can use names defined earlier. For figures pulled from a *separate* notebook, use the `{glue}` approach in [Interactive Plots](#interactive-plots) instead.
+```
+
+---
+
+## Interactive Plots
+
+Interactive [Plotly](https://plotly.com/python/) figures embed via **myst-nb**'s `{glue}` mechanism: a code cell stores a figure under a key, and a `{glue}` directive pastes it anywhere on the page. Requires the jupytext header (top of this file).
+
+### In-file glue
+
+For a quick, one-off plot, build and glue it in a `remove-input` cell right on the page, then paste it by key:
+
+```{code-cell} python
+:tags: [remove-input]
+import math
+import plotly.graph_objects as go
+from myst_nb import glue
+from IPython.display import HTML
+
+t = [i / 20 for i in range(200)]
+fig = go.Figure(go.Scatter3d(
+    x=[math.cos(4 * math.pi * v) for v in t],
+    y=[math.sin(4 * math.pi * v) for v in t],
+    z=t, mode='lines', line=dict(color=t, colorscale='Viridis', width=6),
+))
+fig.update_layout(
+    scene=dict(xaxis_title='x', yaxis_title='y', zaxis_title='t'),
+    paper_bgcolor='rgba(0,0,0,0)', margin=dict(l=0, r=0, t=0, b=0), height=350,
+)
+glue('demo_plotly', HTML(fig.to_html(include_plotlyjs='cdn', full_html=False)), display=False)
+```
+
+```{glue} demo_plotly
+```
+
+*Drag to rotate, scroll to zoom.* The source is a `:tags: [remove-input]` cell that ends with the `glue(...)` call, followed by a `{glue}` directive:
+
+````md
+```{code-cell} python
+:tags: [remove-input]
+# ...build fig...
+glue('demo_plotly', HTML(fig.to_html(include_plotlyjs='cdn', full_html=False)), display=False)
+```
+
+```{glue} demo_plotly
+```
+````
+
+### Cross-file glue
+
+To reuse a figure across pages, or to keep a page tidy, put the builder in a **separate orphan notebook** and reference it with `:doc:`. Create e.g. `assets/my-plot.ipynb` with `"orphan": true` in its metadata and a single cell:
+
+```python
+import plotly.graph_objects as go
+from myst_nb import glue
+from IPython.display import HTML
+
+fig = go.Figure(...)  # build your figure
+glue('my_plot', HTML(fig.to_html(include_plotlyjs='cdn', full_html=False)), display=False)
+```
+
+Then paste it on any page, pointing `:doc:` at the notebook:
+
+````md
+```{glue} my_plot
+:doc: assets/my-plot.ipynb
+```
+````
+
+```{tip}
+**Short helper code is fine inline** on the page (in-file glue). **Long or reused builders belong in an orphan notebook** (cross-file glue) — it keeps the prose readable and lets several pages share one figure.
+```
+
+```{important}
+- Glue **an `HTML(fig.to_html(...))` object**, not the raw `fig`. `glue()` captures via `_repr_html_`; a bare Plotly figure renders through `_ipython_display_` side effects that `glue()` can't see, so it comes out blank.
+- Do **not** add require.js to `conf.py` — its AMD loader steals Plotly's global and the CDN script fails to initialise.
+```
+

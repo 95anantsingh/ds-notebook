@@ -22,7 +22,7 @@ extensions = [
     "sphinx_sitemap",
     "sphinxext.opengraph",
     "sphinx_tippy",
-    "myst_parser",
+    "myst_nb",
 ]
 
 templates_path = ["custom/templates"]
@@ -62,15 +62,9 @@ myst_enable_extensions = [
     "substitution",
 ]
 
-# Render task-list checkboxes as interactive (omit the `disabled` attribute).
 myst_enable_checkboxes = True
-
-# Generate GitHub-style slug anchors on headings (h1, h2) for #fragment links.
-myst_heading_anchors = 2
-
-# Allow $$…$$ display math to appear inline within a paragraph.
+myst_heading_anchors = 3
 myst_dmath_double_inline = True
-# Render a transition (horizontal rule) before the footnotes block.
 myst_footnote_transition = True
 
 # Shorthand link schemes, e.g. [paper](arxiv:1706.03762), [doi](doi:10.…).
@@ -83,6 +77,10 @@ myst_url_schemes = {
     "doi": "https://doi.org/{{path}}",
     "wiki": "https://en.wikipedia.org/wiki/{{path}}",
 }
+
+suppress_warnings = ["mystnb.unknown_mime_type", "myst.strikethrough"]
+
+nb_execution_mode = "cache"
 
 # Cross-link into external project docs by symbol (intersphinx).
 intersphinx_mapping = {

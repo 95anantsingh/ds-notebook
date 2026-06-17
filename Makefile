@@ -11,8 +11,8 @@ ENV_NAME      := $(shell grep '^name:' env.yaml | cut -d' ' -f2)
 #* Getting Started *
 .PHONY: help install update
 help: ## Show this help message
-	@printf "\033[1;34mUsage:\033[0m\n  make [target]\n\n\033[1;34mTargets:\033[0m\n"
-	@awk 'BEGIN {FS = ":.*?## "; cat = ""; first = 1} /^#\* .* \*$$/ {cat = substr($$0, 4, length($$0) - 5); next} /^[a-zA-Z_-]+:.*?## / {if (cat) {printf "%s \033[3;35m%s\033[0m\n", (first ? "" : "\n"), cat; cat = ""; first = 0} printf "  \033[36m%-20s\033[0m %s\n", $$1, $$2}' $(MAKEFILE_LIST)
+	@printf "\n  \033[1;36m▛▀▀▀▀▙\n  ▌── ,▀▙\n  ▌────,▐\033[0m  \033[1mData Science Notebook\033[0m\n  \033[1;36m▌─,───▐\n  ▙▄▄▄▄▄▟\033[0m\n\n\033[1;34mUsage:\033[0m\n  make [target]\n\n\033[1;34mTargets:\033[0m\n"
+	@awk 'BEGIN {FS = ":.*?## "; cat = ""; first = 1} /^#\* .* \*$$/ {cat = substr($$0, 4, length($$0) - 5); next} /^[a-zA-Z_-]+:.*?## / {if (cat) {printf "%s \033[3;35m%s\033[0m\n", (first ? "" : "\n"), cat; cat = ""; first = 0} printf "  \033[36m%-20s\033[0m %s\n", $$1, $$2} END {printf "\n"}' $(MAKEFILE_LIST)
 
 install: ## Install all dependencies
 	conda env update -n $(ENV_NAME) -f env.yaml

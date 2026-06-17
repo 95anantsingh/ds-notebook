@@ -40,6 +40,14 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
+      - name: Restore notebook execution cache
+        uses: actions/cache@v4
+        with:
+          path: build/.jupyter_cache
+          key: jupyter-cache-${{ hashFiles('source/**/*.ipynb') }}
+          restore-keys: |
+            jupyter-cache-
+
       - name: Build documentation
         run: make html
 

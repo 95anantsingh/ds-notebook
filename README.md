@@ -1,4 +1,4 @@
-# DS Notebook
+# Data Science Notebook
 
 A personal data science reference — ML, DL, CV, NLP, system design, and more — built with Sphinx and published to **[95anantsingh.github.io/ds-notebook](https://95anantsingh.github.io/ds-notebook)**.
 
@@ -13,8 +13,9 @@ make install   # install dependencies
 
 ```bash
 make html      # build docs (runs indexer + Sphinx)
-make view      # open in browser
+make serve     # open in browser
 make clean     # remove build artifacts
+make check     # verify files are correctly named and TOC is up to date (used in CI)
 ```
 
 Drop a `.md` file into `source/pages/<Topic>/` and run `make html` — the indexer handles renaming and TOC updates automatically.

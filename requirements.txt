@@ -11,3 +11,5 @@ sphinxext-opengraph>=0.13.0
 sphinx-tippy>=0.4.3
 sphinx-autobuild>=2025.8.25
 linkify-it-py>=2.1.0
+myst-nb>=1.4.0
+plotly>=6.8.0

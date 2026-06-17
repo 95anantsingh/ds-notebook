@@ -39,7 +39,7 @@ conda activate notes   # activate the project Python environment before any comm
 make install   # pip install -r requirements.txt
 make html      # Run indexer + build HTML docs
 make check     # Dry-run indexer (used in CI); exits 1 if files need renaming
-make view      # Open built docs in browser
+make serve     # Open built docs in browser
 make clean     # Remove build/
 ```
 
@@ -77,6 +77,21 @@ Only the block between those sentinels is rewritten on each run. This block need
 See [docs/Demo/1-demo.md](docs/Demo/1-demo.md) for a living reference of every component available in this Sphinx setup: admonitions, math (inline and block), code blocks with line numbers/highlights, Mermaid diagrams, toggle buttons, dropdowns, tabs, cards (with and without links), badges, tables (pipe, list-table, HTML spanning), cross-references, figures, block quotes, and definition lists.
 
 For Mermaid diagrams, use the `mermaid` skill — it generates well-structured diagrams with vertical top-to-bottom layouts.
+
+### MyST Directive Nesting Rule
+
+Inner directives must use **fewer** colons than their parent. When you need to nest a `:::` directive inside another, bump the parent up — not the child:
+
+```
+:::::{grid}          ← 5 colons (outermost)
+::::{grid-item}      ← 4 colons
+:::{dropdown}        ← 3 colons (innermost)
+:::
+::::
+:::::
+```
+
+Never increase a nested directive's colon count to resolve conflicts — always increase the parent's count instead.
 
 ## CI/CD
 
