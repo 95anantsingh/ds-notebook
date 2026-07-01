@@ -126,12 +126,13 @@ footer {
     max-height: 500px;
 }
 
-/* Mermaid diagram size utilities */
-.mermaid-w-xs   { max-width: 250px;  margin: 0 auto; }
-.mermaid-w-sm   { max-width: 400px;  margin: 0 auto; }
-.mermaid-w-md   { max-width: 600px;  margin: 0 auto; }
-.mermaid-w-lg   { max-width: 850px;  margin: 0 auto; }
-.mermaid-w-full { max-width: 100%;   margin: 0 auto; }
+/* Width utilities — usable on any {container} (diagrams, figures, plots, …).
+   Cap the max-width and centre the block. */
+.w-xs   { max-width: 250px;  margin: 0 auto; }
+.w-sm   { max-width: 400px;  margin: 0 auto; }
+.w-md   { max-width: 600px;  margin: 0 auto; }
+.w-lg   { max-width: 850px;  margin: 0 auto; }
+.w-full { max-width: 100%;   margin: 0 auto; }
 
 /* Force light theme for mermaid fullscreen modal regardless of OS dark mode */
 .mermaid-fullscreen-modal.dark-theme {

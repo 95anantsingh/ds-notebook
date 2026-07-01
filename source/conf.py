@@ -1,4 +1,16 @@
 # -- Project information
+
+import os
+from pathlib import Path
+
+# Make source/_lib importable from notebook/code-cell kernels. Notebooks execute
+# in a SEPARATE kernel subprocess, so a sys.path tweak in this (the Sphinx main)
+# process would not reach them — but child kernels inherit os.environ at spawn
+# time, so we prepend source/_lib to PYTHONPATH. This also covers `make dev`
+# (sphinx-autobuild) and direct sphinx-build, which a Makefile-only prefix misses.
+_LIB = Path(__file__).resolve().parent / "_lib"
+os.environ["PYTHONPATH"] = str(_LIB) + os.pathsep + os.environ.get("PYTHONPATH", "")
+
 project = "Data Science Notebook"
 copyright = "2026"
 author = "Anant Singh"
@@ -28,7 +40,7 @@ extensions = [
 templates_path = ["custom/templates"]
 suppress_warnings = ["toc.not_included", "autosectionlabel.*"]
 autosectionlabel_prefix_document = True
-exclude_patterns = ["_build", "Thumbs.db", ".DS_Store"]
+exclude_patterns = ["_build", "Thumbs.db", ".DS_Store", "_lib"]
 
 mermaid_light_theme = "default"
 mermaid_dark_theme = "default"

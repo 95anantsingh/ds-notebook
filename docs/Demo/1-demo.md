@@ -227,7 +227,7 @@ All diagrams are written in Markdown and rendered in the browser — no image fi
 
 ### Flowchart — Training Loop
 
-:::{container} mermaid-w-md
+:::{container} w-md
 ```{mermaid}
 flowchart TD
     A([Start Training]) --> B[Load Batch]
@@ -247,7 +247,7 @@ flowchart TD
 
 `\n` is **not** supported inside Mermaid node text. Use `<br>` instead:
 
-:::{container} mermaid-w-sm
+:::{container} w-sm
 ```{mermaid}
 flowchart LR
     A["Input<br>Embedding"] --> B["Multi-Head<br>Attention"] --> C["Feed<br>Forward"]
@@ -258,7 +258,7 @@ flowchart LR
 
 `$$...$$` (MathJax) is supported inside node labels:
 
-:::{container} mermaid-w-sm
+:::{container} w-sm
 ```{mermaid}
 flowchart LR
     A["$$Q, K, V$$"] --> B["$$\text{softmax}\!\left(\frac{QK^T}{\sqrt{d_k}}\right)V$$"]
@@ -271,7 +271,7 @@ Edges can be animated using the `e1@-->` syntax to assign an edge ID, then setti
 
 **Shorthand — inline speed:**
 
-:::{container} mermaid-w-xs
+:::{container} w-xs
 ```{mermaid}
 flowchart LR
     A e1@--> B
@@ -283,7 +283,7 @@ Two speeds are supported: `fast` and `slow`. This is shorthand for `{ animate: t
 
 **Via classDef — full control:**
 
-:::{container} mermaid-w-xs
+:::{container} w-xs
 ```{mermaid}
 flowchart LR
     A e1@--> B
@@ -299,30 +299,42 @@ flowchart LR
 
 ### Size Control
 
-Diagrams render at their natural size by default. Use a `{container}` with a width class to cap the width. For tall diagrams, fullscreen control is already enabled site-wide.
+Diagrams render at their natural size by default. Wrap one in a `{container}` with a width class (`w-xs` … `w-full`) to cap its width — see [Containers & Width](#containers-width) for the full reference. For tall diagrams, fullscreen control is already enabled site-wide.
 
-**Width classes**
-
-| Class | Max width |
-|---|---|
-| `mermaid-w-xs` | 250px |
-| `mermaid-w-sm` | 400px |
-| `mermaid-w-md` | 600px |
-| `mermaid-w-lg` | 850px |
-| `mermaid-w-full` | 100% |
-
-````markdown
-:::{container} mermaid-w-sm
+```markdown
+:::{container} w-sm
 ```{mermaid}
 flowchart LR
     A --> B --> C
 ```
 :::
+```
+
+Height is auto-managed per the rendering.
+
+---
+
+## Containers & Width
+
+`{container}` renders as a plain `<div class="…">` — use it instead of a raw `<div>` to avoid raw-HTML parsing issues, and to attach utility classes to any block of content.
+
+The width utilities below are **general-purpose**: each caps `max-width` and centres the block, so they work on **anything** wrapped in a `{container}` — Mermaid diagrams, figures, images, Plotly plots, tables, etc.
+
+| Class | Max width |
+|---|---|
+| `w-xs` | 250px |
+| `w-sm` | 400px |
+| `w-md` | 600px |
+| `w-lg` | 850px |
+| `w-full` | 100% |
+
+````markdown
+:::{container} w-md
+![diagram](assets/owl.jpg)
+:::
 ````
 
-Use `{container}` instead of raw `<div>` — it renders as `<div class="...">` without raw HTML parsing issues.
-
-Height is auto managed as per the rendering.
+Combine the class with any inner content; the container only constrains width and centres — height is left to the content.
 
 ---
 
@@ -1317,4 +1329,133 @@ Then paste it on any page, pointing `:doc:` at the notebook:
 - Glue **an `HTML(fig.to_html(...))` object**, not the raw `fig`. `glue()` captures via `_repr_html_`; a bare Plotly figure renders through `_ipython_display_` side effects that `glue()` can't see, so it comes out blank.
 - Do **not** add require.js to `conf.py` — its AMD loader steals Plotly's global and the CDN script fails to initialise.
 ```
+
+### plotly_utils — Matrix Figures (2D & 3D)
+
+`source/_lib/plotly_utils.py` is the reusable **Op model** behind the matrix-multiplication visualisations in the NLP notes — both the 3D bracket/ghost-plane figures and the 2D heatmap figures, static or animated. It is importable from any notebook or `{code-cell}` because `conf.py` prepends `source/_lib` to `PYTHONPATH` at build time (via `os.environ["PYTHONPATH"]`, which child kernel processes inherit).
+
+**Op model** — an operation owns its result, its display glyph, and its animation schedule. Static vs animated and 3D vs 2D are *modes over the same op*, not separate functions: a static figure is just the terminal frame of the op's schedule.
+
+```{list-table}
+:header-rows: 1
+:widths: 38 14 48
+
+* - Call
+  - Returns
+  - Purpose
+* - `Matrix(data, name, color=None, shape=None, planes=None)`
+  - `Matrix`
+  - Wrap a `(rows, cols)` or `(B, rows, cols)` array. Front slice drawn; `planes` ghost planes behind (3D). `color`/`shape` auto-fill if omitted.
+* - `matmul(A, B, *, name, color, shape)`
+  - `Op`
+  - `A @ B` — owns the per-output-cell animation schedule.
+* - `scale(A, by, *, glyph, name, color, shape)`
+  - `Op`
+  - Element-wise `A / by` — static by default.
+* - `softmax(A, *, axis, prefix, name, color, shape)`
+  - `Op`
+  - Row-wise softmax — static by default.
+* - `op(matrices, glyphs, *, prefix, states)`
+  - `Op`
+  - Escape hatch for arbitrary layouts or custom schedules.
+* - `figure(op, *, style, animate, height, planes)`
+  - `go.Figure`
+  - Pure construction. `style='3d'` (brackets) / `'2d'` (heatmap); `animate=True` attaches frames.
+* - `show(fig, *, div_id, controls, loop, height, steps, modebar)`
+  - `HTML`
+  - The **one** CDN-safe display boundary — always `include_plotlyjs='cdn'`. Use as a `glue()` value or a `{code-cell}` final expression.
+```
+
+Operands accept `Matrix` **or** `Op` (auto-unwrapped to `.result`), so ops chain like math:
+
+```python
+from plotly_utils import Matrix, matmul, scale, softmax, figure, show
+from plotly_utils import PALETTE, PLOT_HEIGHT
+import numpy as np
+
+Q_m  = Matrix([[[1,0,2,1],[0,1,1,0],[2,1,0,1]]], "Q",  PALETTE[0], "(B, T, d_k)")
+Kt_m = Matrix(np.array([[[1,0,1,0],[0,1,0,1],[1,1,0,0]]]).transpose(0,2,1),
+              "Kᵀ", PALETTE[1], "(B, d_k, T)")
+
+scores  = matmul(Q_m, Kt_m, name="scores", color=PALETTE[2])  # Q @ Kᵀ
+scaled_ = scale(scores, by=2)                                  # chains — uses scores.result
+W       = softmax(scaled_)
+
+# static 3D  (bracket + ghost-plane style)
+show(figure(scores))
+
+# animated 3D — loads paused at the end frame; ▶⏸ toggle fades in on hover
+show(figure(scores, animate=True), controls="hover", steps=True)
+
+# animated 2D — heatmap, loops with a ~2 s pause on the completed equation
+show(figure(scores, style="2d", animate=True), loop=True, steps=True)
+
+# cross-file use from a notebook
+from myst_nb import glue
+glue("scores_plot", show(figure(scores, height=PLOT_HEIGHT)), display=False)
+```
+
+**Live example — static 3D scores figure:**
+
+```{code-cell} python
+:tags: [remove-input]
+import numpy as np
+from plotly_utils import Matrix, matmul, figure, show, PALETTE, PLOT_HEIGHT
+
+Q_m  = Matrix([[[1,0,2,1],[0,1,1,0],[2,1,0,1]]],
+              "Q", PALETTE[0], "(B, T, d<sub>k</sub>)")
+Kt_m = Matrix(np.array([[[1,0,1,0],[0,1,0,1],[1,1,0,0]]]).transpose(0,2,1),
+              "K<sup>T</sup>", PALETTE[1], "(B, d<sub>k</sub>, T)")
+scores = matmul(Q_m, Kt_m, name="scores", color=PALETTE[2])
+show(figure(scores, height=PLOT_HEIGHT))
+```
+
+**Live example — animated 2D heatmap (loops, with step text):**
+
+```{code-cell} python
+:tags: [remove-input]
+import numpy as np
+from plotly_utils import Matrix, matmul, figure, show, PALETTE
+
+# 2D shows a single flat slice, so the shapes carry no batch B.
+Q_m  = Matrix(np.array([[1,0,2,1],[0,1,1,0],[2,1,0,1]], float), "Q",  PALETTE[0], "(T, d<sub>k</sub>)")
+Kt_m = Matrix(np.array([[1,0,1,0],[0,1,0,1],[1,1,0,0]], float).T, "Kᵀ", PALETTE[1], "(d<sub>k</sub>, T)")
+scores2d = matmul(Q_m, Kt_m, name="S", color=PALETTE[2], shape="(T, T)")
+show(figure(scores2d, style="2d", animate=True), loop=True, steps=True)
+```
+
+**`show()` options**
+
+| Option | Values | Effect |
+|---|---|---|
+| `controls` | `"hover"` (default) / `"always"` / `None` | Play-pause toggle: fades in on hover / always visible / hidden. Ignored for static figures. |
+| `loop` | `True` | Autoplay: jump to frame 0, play through, pause ~2 s on the terminal frame, repeat. |
+| `steps` | `True` | Show the per-frame step text (bottom-centre, black). Hidden by default. |
+| `modebar` | `True` | Show Plotly's top toolbar. Hidden by default. |
+| `div_id` | string | Fixes the div id (else auto-generated). |
+| `height` | int | Override figure height before serialising. |
+
+**`figure()` options**
+
+| Option | Values | Effect |
+|---|---|---|
+| `style` | `"3d"` (default) / `"2d"` | Bracket + ghost-plane 3D, or square-cell heatmap. |
+| `animate` | `False` (default) / `True` | Terminal frame only, or attach all frames (loads paused at end). |
+| `height` | int | Figure height in px (default `PLOT_HEIGHT = 250`). For 2D this is the constraint — cell size is derived from it. |
+| `planes` | int | Override ghost-plane count for all matrices (3D). `0` = flat, no batch depth. |
+
+**2D layout notes** — `style="2d"` derives a uniform cell size from `height` (the tallest matrix fills the plot area; shorter matrices are centre-aligned with the *same* cell size). Cells are square by default and widen only if a decimal value needs the room. The figure is fixed-width (for square cells) and centred on the page via a flex wrapper; hover tooltips and drag-zoom are disabled. Because a 2D heatmap shows a single flat slice, its shapes should omit the batch `B` (the 3D ghost planes are what represent the batch).
+
+**Color palette** — 10 generic colours, auto-assigned by matrix position if `color` is omitted. Import `PALETTE` and index into it, or pass any hex string:
+
+| Index | Hex | Swatch | | Index | Hex | Swatch |
+|---|---|---|---|---|---|---|
+| `PALETTE[0]` | `#2C5C8A` | blue | | `PALETTE[5]` | `#B5651D` | sienna |
+| `PALETTE[1]` | `#4F7A1A` | green | | `PALETTE[6]` | `#1F6F8B` | steel-blue |
+| `PALETTE[2]` | `#A86A12` | amber | | `PALETTE[7]` | `#8A2C5C` | wine |
+| `PALETTE[3]` | `#7A4FA0` | purple | | `PALETTE[8]` | `#6B8A1A` | olive |
+| `PALETTE[4]` | `#1F7A6B` | teal-green | | `PALETTE[9]` | `#5C1F7A` | deep-violet |
+
+If `color` is omitted on a `Matrix`/op, the renderer assigns `PALETTE[position % 10]` at render time. Pass `color=PALETTE[n]` (or any hex) to pin a matrix to one colour across figures.
+
 

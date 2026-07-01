@@ -98,7 +98,7 @@ Where,
 :columns: 12 12 12 5
 :child-align: center
 
-:::{container} mermaid-w-xs
+:::{container} w-xs
 ```{mermaid}
 flowchart TD
     Q([Q]) --> E["$$QK^T / \sqrt{d_k}$$<br>(scores)"]
@@ -112,7 +112,6 @@ flowchart TD
 
 ::::
 :::::
-
 
 ### Example
 
@@ -131,7 +130,7 @@ $$\text{scores} = QK^\top \quad \in \mathbb{R}^{B \times T \times T}$$
 :::{grid-item}
 :columns: 12 12 12 7
 :child-align: start
-```{glue} scores_plot
+```{glue} scores_plot_3d
 :doc: assets/scaled-dot-product.ipynb
 ```
 :::
@@ -163,7 +162,7 @@ $$\text{scaled} = \frac{QK^\top}{\sqrt{d_k}}$$
 :columns: 12 12 12 5
 :child-align: center
 **Step 3 -- Softmax** (row-wise): each row becomes a probability distribution summing to 1.
-$$W = \text{softmax}(\text{scaled})$$
+$$W = \text{softmax}(\text{scaled}) \quad \in \mathbb{R}^{B \times T \times T} \text{ (attention matrix)}$$
 :::
 
 :::{grid-item}
